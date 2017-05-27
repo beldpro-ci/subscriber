@@ -75,9 +75,6 @@ GLOBAL OPTIONS:
 ```
 
 
-<br/>
-
-
 #### Example
 
 
@@ -92,6 +89,9 @@ services:
       - SUBSCRIBER_MAILCHIMP_URL=https://us15.api.mailchimp.com 
       - SUBSCRIBER_PORT=8000
 ```
+
+
+<br/>
 
 
 ### LICENSE
