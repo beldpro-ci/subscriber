@@ -18,12 +18,21 @@ func memberMockHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestMain(m *testing.M) {
-	ts = httptest.NewServer(http.HandleFunc(memberMockHandler))
+	ts = httptest.NewServer(http.HandlerFunc(memberMockHandler))
 	defer ts.Close()
 	os.Exit(m.Run())
 }
 
 func TestSubscribeUser_requestIsAuthenticated(t *testing.T) {
+	mc, err := mailchimp.New(mailchimp.Config{
+		ListId: "123",
+		APIKey: "key",
+		URL:    ts.URL,
+	})
+	assert.NoError(t, err)
+
+	err = mc.Subscribe("email")
+	assert.NoError(t, err)
 }
 
 func TestSubscribeUser_containsData(t *testing.T) {

@@ -1,14 +1,30 @@
 sudo: 'required'
+
 language: go
+
 services:
 - 'docker'
+
 go:
 - '1.8'
+
 before_install:
 - sudo apt install --only-upgrade docker-engine -y
+- go get -u -v github.com/Masterminds/glide
+
+install:
+- make deps
+
+before_script:
+- make -j8
+
 script:
+- make test -j2
+
+after_success:
 - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
 - make images
 - make push-images
+
 notifications:
   email: false

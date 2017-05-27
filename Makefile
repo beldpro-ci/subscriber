@@ -60,20 +60,9 @@ infra:
 		-f ./infra/docker/docker-compose.yml \
 		up
 
-
-infra-aws:
-	docker-compose \
-		-p fillabe \
-		-f ./infra/docker/docker-compose.aws.yml \
-		up -d
-
-
-%.pb.go: %.proto
-	protoc $^ --go_out=plugins=grpc:.
-
-
 %.out:
 	cd $* && go build $(LD_FLAGS) -v -o $@
 
 %.linux.amd64:
 	cd $* && GOOS=linux GOARCH=amd64 GCO_ENABLED=0 go build -a -installsuffix cgo $(LD_FLAGS) -v -o $@
+
