@@ -36,10 +36,15 @@ func New(cfg Config) (server Server, err error) {
 	}
 
 	r := mux.NewRouter()
-	r.Handle("/ping", handlers.CombinedLoggingHandler(os.Stdout,
-		http.HandlerFunc(server.PingHandler)))
-	r.Handle("/subscribe", handlers.CombinedLoggingHandler(os.Stdout,
-		http.HandlerFunc(server.SubscribeHandler)))
+	r.Handle("/ping",
+		handlers.CombinedLoggingHandler(os.Stdout,
+			http.HandlerFunc(server.PingHandler))).
+		Methods("GET")
+
+	r.Handle("/subscribe",
+		handlers.CombinedLoggingHandler(os.Stdout,
+			http.HandlerFunc(server.SubscribeHandler))).
+		Methods("POST")
 
 	server.mc = cfg.MailChimp
 	server.router = r
@@ -51,7 +56,11 @@ func (s *Server) Run() (err error) {
 	http.Handle("/", s.router)
 
 	err = http.ListenAndServe(fmt.Sprintf(":%d", s.port),
-		handlers.RecoveryHandler()(s.router))
+		handlers.CORS(handlers.AllowedHeaders([]string{
+			"Accept", "Accept-Language", "Content-Language", "Origin", "Content-Type",
+		}))(
+			handlers.RecoveryHandler()(
+				s.router)))
 	if err != nil {
 		err = errors.Wrapf(err,
 			"Errored listen on port %d", s.port)
@@ -66,13 +75,42 @@ func (c *Server) PingHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func isMultipart(r *http.Request) bool {
+	return r.Header.Get("Content-Type") == "multipart/form-data"
+}
+
+func isURLEncoded(r *http.Request) bool {
+	return r.Header.Get("Content-Type") == "application/x-www-form-urlencoded"
+}
+
 func (c *Server) SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
+	var contentType = r.Header.Get("Content-Type")
 
-	if err = r.ParseForm(); err != nil {
-		log.
-			WithError(err).
-			Error("Couldn't parse form from subscribe request")
+	switch contentType {
+	case "multipart/form-data":
+		if err = r.ParseMultipartForm(1024 * 10); err != nil {
+			log.
+				WithError(err).
+				Error("Couldn't parse multipart-form from subscribe request")
+			http.Error(w,
+				"Couldn't parse form",
+				http.StatusBadRequest)
+			return
+		}
+	case "application/x-www-form-urlencoded":
+		if err = r.ParseForm(); err != nil {
+			log.
+				WithError(err).
+				Error("Couldn't parse form from subscribe request")
+			http.Error(w,
+				"Couldn't parse form",
+				http.StatusBadRequest)
+			return
+		}
+	default:
+		log.Warnf("Unexpected Content-Type: %s",
+			contentType)
 		http.Error(w,
 			"Couldn't parse form",
 			http.StatusBadRequest)
