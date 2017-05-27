@@ -10,6 +10,8 @@ MailChimp doesn't provide a way of subscribing emails to a list directly from a 
 This package (wrapped as a Docker image as well) allows one to have an endpoint and subscribe emails just by providing a MailChimp list id and API key.
 
 
+<br />
+
 #### Usage 
 
 There are two ways of using `subscriber` out of the box.
@@ -74,6 +76,23 @@ GLOBAL OPTIONS:
 
 
 <br/>
+
+
+#### Example
+
+
+```yml
+version: '3.2'
+services:
+  subscriber:
+    image: 'beldpro/subscriber'
+    environment:
+      - SUBSCRIBER_MAILCHIMP_API_KEY=<redacted> 
+      - SUBSCRIBER_MAILCHIMP_LIST_ID=<redacted> 
+      - SUBSCRIBER_MAILCHIMP_URL=https://us15.api.mailchimp.com 
+      - SUBSCRIBER_PORT=8000
+```
+
 
 ### LICENSE
 
