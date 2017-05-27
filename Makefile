@@ -32,6 +32,9 @@ clean:
 	find . -name "*.out" -type f -delete
 	find . -name "*.linux.amd64" -type f -delete
 
+image-subscriber:
+	docker build -t beldpro/subscriber .
+
 
 push-image-%:
 	docker tag beldpro/$* beldpro/$*:$(VERSION)
@@ -50,9 +53,6 @@ install-%:
 fmt-%:
 	cd $* && gofmt -s -w .
 
-
-image-filla-lb:
-	cd infra/docker/lb && docker build -t beldpro/filla-lb .
 
 infra:
 	docker-compose \
