@@ -1,6 +1,6 @@
 <h1 align="center">subscriber 📃  </h1>
 
-<h5 align="center">Perform Email Subscriptions</h5>
+<h5 align="center">Subscribe Emails with MailChimp without confirmation</h5>
 
 <br/>
 
