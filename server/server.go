@@ -81,6 +81,7 @@ func (c *Server) subscribeHandler(w http.ResponseWriter, r *http.Request) {
 
 	var email = r.FormValue("email")
 	if email == "" {
+		log.Warn("Tried to subscribe without email")
 		http.Error(w,
 			"required field 'email' not set",
 			http.StatusBadRequest)
@@ -96,6 +97,10 @@ func (c *Server) subscribeHandler(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError)
 		return
 	}
+
+	log.
+		WithField("email", email).
+		Info("User subscribed")
 
 	fmt.Fprintf(w, "OK")
 	return
