@@ -1,6 +1,7 @@
 package mailchimp
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -55,7 +56,7 @@ func (c *Client) Subscribe(email string) (err error) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", c.memberEndpoint, jsonBytes)
+	req, err := http.NewRequest("POST", c.memberEndpoint, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		err = errors.Wrapf(err,
 			"Couldn't create request to perform member subscription")
@@ -78,6 +79,13 @@ func (c *Client) Subscribe(email string) (err error) {
 		err = errors.Wrapf(err,
 			"Request to subscribe email (%s) failed",
 			email)
+		return
+	}
+
+	if resp.StatusCode > 299 {
+		err = errors.Errorf(
+			"Request wasn't successful (%d - %s)",
+			resp.StatusCode, resp.Status)
 		return
 	}
 

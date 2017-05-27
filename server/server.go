@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/beldpro-ci/subscriber/mailchimp"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -12,19 +13,13 @@ import (
 
 type Server struct {
 	port   int
+	mc     *mailchimp.Client
 	router *mux.Router
 }
 
 type Config struct {
-	Port int
-}
-
-func pingHandler(w http.ResponseWriter, r *http.Request) {
-	return
-}
-
-func subscribeHandler(w http.ResponseWriter, r *http.Request) {
-	return
+	MailChimp *mailchimp.Client
+	Port      int
 }
 
 func New(cfg Config) (server Server, err error) {
@@ -35,9 +30,9 @@ func New(cfg Config) (server Server, err error) {
 
 	r := mux.NewRouter()
 	r.Handle("/ping", handlers.CombinedLoggingHandler(os.Stdout,
-		http.HandlerFunc(pingHandler)))
+		http.HandlerFunc(server.pingHandler)))
 	r.Handle("/subscribe", handlers.CombinedLoggingHandler(os.Stdout,
-		http.HandlerFunc(subscribeHandler)))
+		http.HandlerFunc(server.subscribeHandler)))
 
 	server.router = r
 	server.port = cfg.Port
@@ -55,5 +50,30 @@ func (s *Server) Run() (err error) {
 		return
 	}
 
+	return
+}
+
+func (c *Server) pingHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "PONG")
+	return
+}
+
+func (c *Server) subscribeHandler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w,
+			"Couldn't parse form",
+			http.StatusBadRequest)
+		return
+	}
+
+	var email = r.FormValue("email")
+	if email == "" {
+		http.Error(w,
+			"required field 'email' not set",
+			http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, "OK")
 	return
 }
