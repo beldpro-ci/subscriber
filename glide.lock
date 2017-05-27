@@ -1,5 +1,5 @@
-hash: 0faf6af4e1d34528747409551cb29202b982caaf649f0f9053a1c09b21a00d96
-updated: 2017-05-27T10:12:50.243374993-03:00
+hash: 5581af03ce446a73d97f8dc485c7e53364d203dd7b252686d81e84c438ae204f
+updated: 2017-05-27T10:32:10.109883224-03:00
 imports:
 - name: github.com/beldpro-ci/common
   version: 6c33f5d6693261903da4a7696b139b7b603cad78
@@ -12,6 +12,10 @@ imports:
   - spew
 - name: github.com/fatih/color
   version: 62e9147c64a1ed519147b62a56a14e83e2be02c1
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/handlers
+  version: a4043c62cc2329bacda331d33fc908ab11ef0ec3
 - name: github.com/gorilla/mux
   version: bcd8bc72b08df0f70df986b97f95590779502d31
 - name: github.com/mattn/go-colorable

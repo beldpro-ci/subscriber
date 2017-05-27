@@ -15,3 +15,5 @@ import:
 - package: github.com/beldpro-ci/common
   subpackages:
   - utils
+- package: github.com/gorilla/handlers
+  version: v1.2.1

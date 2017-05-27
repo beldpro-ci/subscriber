@@ -1,8 +1,8 @@
 SHELL			:=	/bin/bash
 PKGS			:=	subscriber
 IMAGES			:=	subscriber
-TEST_PKGS		:=	subscriber
-FMT_PKGS		:=	subscriber
+TEST_PKGS		:=	subscriber server
+FMT_PKGS		:=	subscriber server
 VERSION			:=	$(shell cat ./VERSION)-$(shell git rev-parse --short HEAD)
 LD_FLAGS		:= 	-ldflags "-w -s"
 
