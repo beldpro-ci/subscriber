@@ -4,8 +4,9 @@ go:
 - '1.8'
 before_install:
 - sudo apt install --only-upgrade docker-engine -y
-- go get -u -v github.com/Masterminds/glide
 script:
-- make image
+- docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+- make images
+- make push-images
 notifications:
   email: false
