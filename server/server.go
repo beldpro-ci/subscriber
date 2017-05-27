@@ -56,9 +56,7 @@ func (s *Server) Run() (err error) {
 	http.Handle("/", s.router)
 
 	err = http.ListenAndServe(fmt.Sprintf(":%d", s.port),
-		handlers.CORS(handlers.AllowedHeaders([]string{
-			"Accept", "Accept-Language", "Content-Language", "Origin", "Content-Type",
-		}))(
+		handlers.CORS()(
 			handlers.RecoveryHandler()(
 				s.router)))
 	if err != nil {
@@ -87,18 +85,8 @@ func (c *Server) SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var contentType = r.Header.Get("Content-Type")
 
-	switch contentType {
-	case "multipart/form-data":
-		if err = r.ParseMultipartForm(1024 * 10); err != nil {
-			log.
-				WithError(err).
-				Error("Couldn't parse multipart-form from subscribe request")
-			http.Error(w,
-				"Couldn't parse form",
-				http.StatusBadRequest)
-			return
-		}
-	case "application/x-www-form-urlencoded":
+	switch {
+	case contentType == "application/x-www-form-urlencoded":
 		if err = r.ParseForm(); err != nil {
 			log.
 				WithError(err).
