@@ -7,7 +7,7 @@ VERSION			:=	$(shell cat ./VERSION)-$(shell git rev-parse --short HEAD)
 LD_FLAGS		:= 	-ldflags "-w -s"
 
 
-.PHONY: all linux push-image test fmt install deps clean
+.PHONY: all linux push-images test fmt install deps clean
 
 
 all: $(addsuffix .out, $(PKGS))
