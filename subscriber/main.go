@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/beldpro-ci/subscriber/mailchimp"
 	"github.com/beldpro-ci/subscriber/server"
 	"gopkg.in/urfave/cli.v1"
 
@@ -21,12 +22,23 @@ func main() {
 			"port")
 		commonutils.AssertStringFlagsSet("_app", c, mainLog,
 			"api-key",
+			"url",
 			"list-id")
 		return nil
 	}
 	app.Action = func(c *cli.Context) error {
+		mc, err := mailchimp.New(mailchimp.Config{
+			APIKey: c.String("api-key"),
+			ListId: c.String("list-id"),
+			URL:    c.String("url"),
+		})
+		if err != nil {
+			return err
+		}
+
 		httpserver, err := server.New(server.Config{
-			Port: c.Int("port"),
+			Port:      c.Int("port"),
+			MailChimp: &mc,
 		})
 		if err != nil {
 			return err
@@ -46,6 +58,12 @@ func main() {
 			Name:   "api-key",
 			EnvVar: "SUBSCRIBER_MAILCHIMP_API_KEY",
 			Usage:  "MailChimp API Key",
+		},
+
+		cli.StringFlag{
+			Name:   "url",
+			EnvVar: "SUBSCRIBER_MAILCHIMP_URL",
+			Usage:  "MailChimp's datacenter URL",
 		},
 
 		cli.StringFlag{

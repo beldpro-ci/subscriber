@@ -9,6 +9,8 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 type Server struct {
@@ -28,12 +30,18 @@ func New(cfg Config) (server Server, err error) {
 		return
 	}
 
+	if cfg.MailChimp == nil {
+		err = errors.Errorf("MailChimp client can't be nil")
+		return
+	}
+
 	r := mux.NewRouter()
 	r.Handle("/ping", handlers.CombinedLoggingHandler(os.Stdout,
 		http.HandlerFunc(server.pingHandler)))
 	r.Handle("/subscribe", handlers.CombinedLoggingHandler(os.Stdout,
 		http.HandlerFunc(server.subscribeHandler)))
 
+	server.mc = cfg.MailChimp
 	server.router = r
 	server.port = cfg.Port
 	return
@@ -59,7 +67,12 @@ func (c *Server) pingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Server) subscribeHandler(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
+	var err error
+
+	if err = r.ParseForm(); err != nil {
+		log.
+			WithError(err).
+			Error("Couldn't parse form from subscribe request")
 		http.Error(w,
 			"Couldn't parse form",
 			http.StatusBadRequest)
@@ -71,6 +84,16 @@ func (c *Server) subscribeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w,
 			"required field 'email' not set",
 			http.StatusBadRequest)
+		return
+	}
+
+	if err = c.mc.Subscribe(email); err != nil {
+		log.
+			WithError(err).
+			Error("Couldn't perform mailchimp subscription")
+		http.Error(w,
+			"Couldn't create MailChimp subscription",
+			http.StatusInternalServerError)
 		return
 	}
 
