@@ -27,6 +27,8 @@ Or use use `go get`:
 
 - `docker pull beldpro/subscriber`
 
+<br />
+
 Having it from either of these methods, use it by passing the required environment variables (all of them have `SUBSCRIBER` as prefix):
 
 | Environment Variable  | Description |
@@ -40,8 +42,12 @@ Having it from either of these methods, use it by passing the required environme
 ps.: `SUBSCRIBER_MAILCHIMP_URL` should not contain the `api` version - i.e, it should look like `https://us15.api.mailchimp.com`.
 
 
+<br />
+
 For more information, run `subscriber --help`:
 
+
+<br />
 
 ```sh
 $ subscriber --help
