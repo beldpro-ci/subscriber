@@ -1,7 +1,7 @@
 SHELL			:=	/bin/bash
 PKGS			:=	subscriber
 IMAGES			:=	subscriber
-TEST_PKGS		:=	mailchimp
+TEST_PKGS		:=	mailchimp server
 FMT_PKGS		:=	subscriber server mailchimp
 VERSION			:=	$(shell cat ./VERSION)-$(shell git rev-parse --short HEAD)
 LD_FLAGS		:= 	-ldflags "-w -s"

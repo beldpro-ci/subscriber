@@ -37,9 +37,9 @@ func New(cfg Config) (server Server, err error) {
 
 	r := mux.NewRouter()
 	r.Handle("/ping", handlers.CombinedLoggingHandler(os.Stdout,
-		http.HandlerFunc(server.pingHandler)))
+		http.HandlerFunc(server.PingHandler)))
 	r.Handle("/subscribe", handlers.CombinedLoggingHandler(os.Stdout,
-		http.HandlerFunc(server.subscribeHandler)))
+		http.HandlerFunc(server.SubscribeHandler)))
 
 	server.mc = cfg.MailChimp
 	server.router = r
@@ -61,12 +61,12 @@ func (s *Server) Run() (err error) {
 	return
 }
 
-func (c *Server) pingHandler(w http.ResponseWriter, r *http.Request) {
+func (c *Server) PingHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "PONG")
 	return
 }
 
-func (c *Server) subscribeHandler(w http.ResponseWriter, r *http.Request) {
+func (c *Server) SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if err = r.ParseForm(); err != nil {
