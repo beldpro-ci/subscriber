@@ -1,0 +1,4 @@
+vendor
+*.out
+*.linux.amd64
+.filla_updatescktime
